@@ -101,6 +101,14 @@
 
   <footer>
     <span id="error-msg" class="error-msg"></span>
+    <div class="tooltip-wrap">
+      <svg class="tooltip-icon" id="payload-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <pre class="tooltip-box" id="payload-preview"></pre>
+    </div>
     <button class="btn-next" type="button" onclick="submitQuote()">Next</button>
   </footer>
 
@@ -162,6 +170,20 @@
         btn.textContent = 'Next';
       }
     }
+    document.getElementById('payload-icon').addEventListener('mouseenter', function () {
+      const body = {
+        currencyCode:        document.getElementById('currency').value,
+        eventTravelDateTime: document.getElementById('event-date').value,
+        languageCode:        document.getElementById('language').value,
+        member:              document.getElementById('member-id').value,
+        returnHtml:          true,
+        values: [{
+          numberOfTickets: Number(document.getElementById('ticket-count').value) || null,
+          value:           Number(document.getElementById('ticket-value').value) || null,
+        }],
+      };
+      document.getElementById('payload-preview').textContent = JSON.stringify(body, null, 2);
+    });
   </script>
 
 </body>

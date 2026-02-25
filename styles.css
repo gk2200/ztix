@@ -262,6 +262,42 @@ footer {
   border-color: #111;
 }
 
+.tooltip-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.tooltip-icon {
+  color: #999;
+  cursor: default;
+}
+
+.tooltip-icon:hover {
+  color: #111;
+}
+
+.tooltip-box {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 10px);
+  right: 0;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 12px;
+  font-size: 12px;
+  line-height: 1.6;
+  white-space: pre;
+  width: max-content;
+  max-width: 360px;
+  z-index: 100;
+}
+
+.tooltip-wrap:hover .tooltip-box {
+  display: block;
+}
+
 .error-msg {
   font-size: 13px;
   color: #888;

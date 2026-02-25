@@ -60,6 +60,14 @@
   <footer>
     <button class="btn-back" type="button" onclick="window.location.href='index.html'">Back</button>
     <span id="pay-error" class="error-msg"></span>
+    <div class="tooltip-wrap">
+      <svg class="tooltip-icon" id="payload-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <pre class="tooltip-box" id="payload-preview"></pre>
+    </div>
     <button class="btn-next" type="button" onclick="submitSale()">Pay</button>
   </footer>
 
@@ -80,7 +88,7 @@
       const quote   = JSON.parse(sessionStorage.getItem('quoteResponse') || '{}');
       const product = quote.products?.[0];
 
-      const itemValue = product?.productData?.[0]?.sourcePrice ?? 0;
+      const itemValue = (product?.productData?.[0]?.sourcePrice ?? 0) / (request.numberOfTickets ?? 1);
       const items = Array.from({ length: request.numberOfTickets ?? 1 }, (_, i) => ({
         customerName: `${pick(firstNames)} ${pick(lastNames)}`,
         description:  `Item Description ${i + 1}`,
@@ -192,6 +200,38 @@
         }
       }
     }
+    document.getElementById('payload-icon').addEventListener('mouseenter', function () {
+      const request = JSON.parse(sessionStorage.getItem('quoteRequest') || '{}');
+      const quote   = JSON.parse(sessionStorage.getItem('quoteResponse') || '{}');
+      const product = quote.products?.[0];
+      const itemValue = (product?.productData?.[0]?.sourcePrice ?? 0) / (request.numberOfTickets ?? 1);
+
+      const body = {
+        bookingReference: '<generated on submit>',
+        customers: [{
+          email:     document.getElementById('email').value,
+          firstName: document.getElementById('first-name').value,
+          lastName:  document.getElementById('last-name').value,
+          telephone: '<generated on submit>',
+        }],
+        isPaidInFull: true,
+        member:       request.member ?? '',
+        products: [{
+          productId:   product?.productData?.[0]?.productId,
+          productCode: product?.code,
+          sold:        productSelection?.sold ?? false,
+          items: Array.from({ length: request.numberOfTickets ?? 1 }, (_, i) => ({
+            customerName: '<random>',
+            description:  `Item Description ${i + 1}`,
+            reference:    `Item Reference ${i + 1}`,
+            value:        itemValue,
+          })),
+        }],
+        quoteId: quote.quoteId,
+      };
+
+      document.getElementById('payload-preview').textContent = JSON.stringify(body, null, 2);
+    });
   </script>
 
 </body>
