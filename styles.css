@@ -286,10 +286,9 @@ footer {
 
 .tooltip-box {
   display: none;
-  position: absolute;
-  bottom: calc(100% + 10px);
-  left: 50%;
-  transform: translateX(-50%);
+  position: fixed;
+  bottom: 70px;
+  right: 20px;
   background: #fff;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -297,8 +296,8 @@ footer {
   font-size: 12px;
   line-height: 1.6;
   white-space: pre;
-  width: max-content;
-  max-width: 360px;
+  max-width: min(360px, calc(100vw - 40px));
+  overflow-x: auto;
   z-index: 100;
 }
 

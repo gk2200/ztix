@@ -38,12 +38,17 @@
     const sold         = selection?.sold ?? false;
     const total        = sold ? ticketValue + protectPrice : ticketValue;
 
+    const refundLink = sale.refundableLink
+      ? `<a href="${sale.refundableLink}" target="_blank">${sale.refundableLink}</a>`
+      : '-';
+
     const rows = [
-      ['Sale ID',     sale.saleId ?? '-'],
-      ['Quote ID',    quote.quoteId ?? '-'],
-      ['Product',     quote.products?.[0]?.code ?? '-'],
-      ['Tickets',     request.numberOfTickets ?? '-'],
-      ['Total',       `${currency} ${total.toFixed(rounding)}`],
+      ['Sale ID',        sale.saleId ?? '-'],
+      ['Quote ID',       quote.quoteId ?? '-'],
+      ['Product',        quote.products?.[0]?.code ?? '-'],
+      ['Tickets',        request.numberOfTickets ?? '-'],
+      ['Total',          `${currency} ${total.toFixed(rounding)}`],
+      ['Refund link',    refundLink],
     ];
 
     document.getElementById('confirmation-summary').innerHTML =
