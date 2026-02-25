@@ -1,0 +1,277 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 15px;
+  color: #111;
+  background: #fff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  padding: 32px 40px 20px;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Settings */
+
+#settings-cb {
+  display: none;
+}
+
+.settings-icon {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  color: #666;
+}
+
+.settings-icon:hover {
+  color: #111;
+}
+
+.settings-toggle {
+  position: relative;
+}
+
+.settings-panel {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 12px);
+  width: 300px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 20px;
+  z-index: 100;
+}
+
+#settings-cb:checked ~ .settings-panel {
+  display: block;
+}
+
+.settings-section {
+  margin-bottom: 20px;
+}
+
+.settings-section h3 {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #888;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.settings-section .form-group {
+  margin-bottom: 12px;
+}
+
+.settings-section label {
+  font-size: 11px;
+}
+
+.settings-section input[type="text"] {
+  font-size: 13px;
+  padding: 8px 10px;
+}
+
+.btn-save {
+  display: block;
+  width: 100%;
+  padding: 9px;
+  font-size: 13px;
+  font-weight: 500;
+  background: #111;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+  letter-spacing: 0.3px;
+  margin-top: 8px;
+  transition: opacity 0.15s;
+}
+
+.btn-save:hover {
+  opacity: 0.8;
+}
+
+header h1 {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+}
+
+main {
+  flex: 1;
+  padding: 40px;
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.step-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #888;
+  margin-bottom: 8px;
+}
+
+main h2 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 32px;
+}
+
+.form-group {
+  margin-bottom: 24px;
+}
+
+.quote-summary {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 16px;
+  margin-bottom: 28px;
+}
+
+.quote-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  padding: 4px 0;
+}
+
+.quote-row span:first-child {
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  font-size: 11px;
+}
+
+.quote-row span:last-child {
+  font-weight: 500;
+}
+
+label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #444;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+input[type="text"],
+input[type="date"],
+input[type="number"],
+select {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  color: #111;
+  appearance: none;
+  -webkit-appearance: none;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+input[type="text"]:focus,
+input[type="date"]:focus,
+input[type="number"]:focus,
+select:focus {
+  border-color: #111;
+}
+
+.select-wrapper {
+  position: relative;
+}
+
+.select-wrapper::after {
+  content: "";
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid #666;
+  pointer-events: none;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+}
+
+.form-row .form-group {
+  flex: 1;
+}
+
+footer {
+  padding: 20px 40px;
+  border-top: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+}
+
+.btn-back {
+  padding: 10px 28px;
+  font-size: 14px;
+  font-weight: 500;
+  background: #fff;
+  color: #111;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  transition: border-color 0.15s;
+}
+
+.btn-back:hover {
+  border-color: #111;
+}
+
+.error-msg {
+  font-size: 13px;
+  color: #888;
+  align-self: center;
+}
+
+.btn-next {
+  margin-left: auto;
+  padding: 10px 28px;
+  font-size: 14px;
+  font-weight: 500;
+  background: #111;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  transition: opacity 0.15s;
+}
+
+.btn-next:hover {
+  opacity: 0.8;
+}

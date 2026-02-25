@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header>
+    <h1>ztix</h1>
+  </header>
+
+  <main>
+    <p class="step-label">Step 2 of ...</p>
+    <h2>Payment</h2>
+
+    <div id="quote-summary" class="quote-summary"></div>
+
+    <form id="payment-form">
+
+      <div class="form-group">
+        <label for="card-number">Card number</label>
+        <input type="text" id="card-number" name="card_number" placeholder="1234 5678 9012 3456" maxlength="19">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="expiry">Expiry date</label>
+          <input type="text" id="expiry" name="expiry" placeholder="MM/YY" maxlength="5">
+        </div>
+        <div class="form-group">
+          <label for="cvv">CVV</label>
+          <input type="text" id="cvv" name="cvv" placeholder="123" maxlength="4">
+        </div>
+      </div>
+
+    </form>
+  </main>
+
+  <footer>
+    <button class="btn-back" type="button" onclick="window.location.href='index.html'">Back</button>
+    <button class="btn-next" type="button">Pay</button>
+  </footer>
+
+  <script>
+    const raw = sessionStorage.getItem('quoteResponse');
+    if (raw) {
+      const quote = JSON.parse(raw);
+      const product = quote.products?.[0];
+      const summary = document.getElementById('quote-summary');
+
+      if (product) {
+        summary.innerHTML = `
+          <div class="quote-row"><span>Quote ID</span><span>${quote.quoteId}</span></div>
+          <div class="quote-row"><span>Product</span><span>${product.code}</span></div>
+          <div class="quote-row"><span>Price</span><span>${product.productData?.[0]?.totalProductPrice?.toFixed(quote.priceRounding ?? 2)}</span></div>
+        `;
+      }
+    }
+  </script>
+
+</body>
+</html>
