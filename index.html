@@ -112,12 +112,17 @@
       const errorMsg = document.getElementById('error-msg');
 
       const body = {
-        EventTravelDateTime: document.getElementById('event-date').value,
-        LanguageCode:        document.getElementById('language').value,
-        CurrencyCode:        document.getElementById('currency').value,
-        NumberOfTickets:     Number(document.getElementById('ticket-count').value),
-        TicketFaceValue:     Number(document.getElementById('ticket-value').value),
-        Member:              { MemberId: document.getElementById('member-id').value },
+        currencyCode:         document.getElementById('currency').value,
+        eventTravelDateTime:  document.getElementById('event-date').value,
+        languageCode:         document.getElementById('language').value,
+        member:               document.getElementById('member-id').value,
+        returnHtml:           true,
+        values: [
+          {
+            numberOfTickets: Number(document.getElementById('ticket-count').value),
+            value:           Number(document.getElementById('ticket-value').value),
+          }
+        ],
       };
 
       btn.disabled = true;
