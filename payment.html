@@ -18,6 +18,8 @@
 
     <div id="quote-summary" class="quote-summary"></div>
 
+    <div id="quote-widget"></div>
+
     <form id="payment-form">
 
       <div class="form-group">
@@ -57,6 +59,18 @@
           <div class="quote-row"><span>Product</span><span>${product.code}</span></div>
           <div class="quote-row"><span>Price</span><span>${product.productData?.[0]?.totalProductPrice?.toFixed(quote.priceRounding ?? 2)}</span></div>
         `;
+
+        if (product.html) {
+          const widget = document.getElementById('quote-widget');
+          widget.innerHTML = product.html;
+
+          // Re-run any inline scripts from the widget
+          widget.querySelectorAll('script').forEach(oldScript => {
+            const newScript = document.createElement('script');
+            newScript.textContent = oldScript.textContent;
+            oldScript.replaceWith(newScript);
+          });
+        }
       }
     }
   </script>
