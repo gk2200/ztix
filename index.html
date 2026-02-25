@@ -147,6 +147,13 @@
 
         const data = await res.json();
         sessionStorage.setItem('quoteResponse', JSON.stringify(data));
+        sessionStorage.setItem('quoteRequest', JSON.stringify({
+          numberOfTickets: body.values[0].numberOfTickets,
+          ticketValue:     body.values[0].value,
+          member:          body.member,
+        }));
+        sessionStorage.setItem('pgClientId',     document.getElementById('pg-client-id').value);
+        sessionStorage.setItem('pgClientSecret', document.getElementById('pg-client-secret').value);
 
         window.location.href = 'payment.html';
       } catch (err) {

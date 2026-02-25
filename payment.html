@@ -22,6 +22,22 @@
 
     <form id="payment-form">
 
+      <div class="form-row">
+        <div class="form-group">
+          <label for="first-name">First name</label>
+          <input type="text" id="first-name" name="first_name">
+        </div>
+        <div class="form-group">
+          <label for="last-name">Last name</label>
+          <input type="text" id="last-name" name="last_name">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="text" id="email" name="email">
+      </div>
+
       <div class="form-group">
         <label for="card-number">Card number</label>
         <input type="text" id="card-number" name="card_number" placeholder="1234 5678 9012 3456" maxlength="19">
@@ -43,10 +59,100 @@
 
   <footer>
     <button class="btn-back" type="button" onclick="window.location.href='index.html'">Back</button>
-    <button class="btn-next" type="button">Pay</button>
+    <span id="pay-error" class="error-msg"></span>
+    <button class="btn-next" type="button" onclick="submitSale()">Pay</button>
   </footer>
 
   <script>
+    function randomRef(len) {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      return Array.from({ length: len }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+    }
+
+    function randomPhone() {
+      return `+1-555-${String(Math.floor(Math.random() * 900) + 100)}-${String(Math.floor(Math.random() * 9000) + 1000)}`;
+    }
+
+    async function submitSale() {
+      const btn     = document.querySelector('.btn-next');
+      const errMsg  = document.getElementById('pay-error');
+      const request = JSON.parse(sessionStorage.getItem('quoteRequest') || '{}');
+      const quote   = JSON.parse(sessionStorage.getItem('quoteResponse') || '{}');
+      const product = quote.products?.[0];
+
+      const items = Array.from({ length: request.numberOfTickets ?? 1 }, (_, i) => ({
+        customerName: `${pick(firstNames)} ${pick(lastNames)}`,
+        description:  `Item Description ${i + 1}`,
+        reference:    `Item Reference ${i + 1}`,
+        value:        request.ticketValue ?? 0,
+      }));
+
+      const body = {
+        bookingReference: randomRef(8),
+        customers: [{
+          email:     document.getElementById('email').value,
+          firstName: document.getElementById('first-name').value,
+          lastName:  document.getElementById('last-name').value,
+          telephone: randomPhone(),
+        }],
+        isPaidInFull: true,
+        member:       request.member ?? '',
+        products: [{
+          productId:   product?.productData?.[0]?.productId,
+          productCode: product?.code,
+          sold:        productSelection?.sold ?? false,
+          items,
+        }],
+        quoteId: quote.quoteId,
+      };
+
+      btn.disabled = true;
+      btn.textContent = 'Processing...';
+      errMsg.textContent = '';
+
+      try {
+        const res = await fetch('/api/sale', {
+          method: 'POST',
+          headers: {
+            'Content-Type':       'application/json',
+            'x-pg-client-id':     sessionStorage.getItem('pgClientId') ?? '',
+            'x-pg-client-secret': sessionStorage.getItem('pgClientSecret') ?? '',
+          },
+          body: JSON.stringify(body),
+        });
+
+        if (!res.ok) {
+          const errBody = await res.json().catch(() => ({}));
+          throw new Error(`${res.status}: ${JSON.stringify(errBody)}`);
+        }
+
+        const data = await res.json();
+        console.log('Sale response:', data);
+        alert('Payment successful!');
+      } catch (err) {
+        errMsg.textContent = `Error: ${err.message}`;
+        btn.disabled = false;
+        btn.textContent = 'Pay';
+      }
+    }
+
+    const firstNames = ['James', 'Emma', 'Liam', 'Olivia', 'Noah', 'Sophia', 'Lucas', 'Mia'];
+    const lastNames  = ['Taylor', 'Smith', 'Johnson', 'Brown', 'Wilson', 'Davis', 'Clark', 'Lee'];
+    const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+
+    const firstName = pick(firstNames);
+    const lastName  = pick(lastNames);
+    document.getElementById('first-name').value = firstName;
+    document.getElementById('last-name').value  = lastName;
+    document.getElementById('email').value       = `${firstName.toLowerCase()}.${lastName.toLowerCase()}@example.com`;
+
+    let productSelection = null;
+
+    document.addEventListener('pg-change', function (e) {
+      productSelection = e.detail;
+      console.log('pg-change:', productSelection);
+    });
+
     const raw = sessionStorage.getItem('quoteResponse');
     if (raw) {
       const quote = JSON.parse(raw);
