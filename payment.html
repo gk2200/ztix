@@ -128,6 +128,7 @@
 
         const data = await res.json();
         sessionStorage.setItem('saleResponse', JSON.stringify(data));
+        sessionStorage.setItem('productSelection', JSON.stringify(productSelection));
         window.location.href = 'confirmation.html';
       } catch (err) {
         errMsg.textContent = `Error: ${err.message}`;
@@ -150,7 +151,7 @@
 
     document.addEventListener('pg-change', function (e) {
       productSelection = e.detail;
-      console.log('pg-change:', productSelection);
+      if (typeof updateTotal === 'function') updateTotal(productSelection.sold);
     });
 
     const raw = sessionStorage.getItem('quoteResponse');
@@ -160,10 +161,21 @@
       const summary = document.getElementById('quote-summary');
 
       if (product) {
+        const request       = JSON.parse(sessionStorage.getItem('quoteRequest') || '{}');
+        const rounding      = quote.priceRounding ?? 2;
+        const ticketValue   = request.ticketValue ?? 0;
+        const protectPrice  = product.productData?.[0]?.totalProductPrice ?? 0;
+        const currency      = product.productData?.[0]?.currencyCode ?? '';
+
+        function updateTotal(sold) {
+          const total = sold ? ticketValue + protectPrice : ticketValue;
+          document.getElementById('basket-total').textContent = `${currency} ${total.toFixed(rounding)}`;
+        }
+
         summary.innerHTML = `
           <div class="quote-row"><span>Quote ID</span><span>${quote.quoteId}</span></div>
           <div class="quote-row"><span>Product</span><span>${product.code}</span></div>
-          <div class="quote-row"><span>Price</span><span>${product.productData?.[0]?.totalProductPrice?.toFixed(quote.priceRounding ?? 2)}</span></div>
+          <div class="quote-row"><span>Total</span><span id="basket-total">${currency} ${ticketValue.toFixed(rounding)}</span></div>
         `;
 
         if (product.html) {

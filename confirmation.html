@@ -26,20 +26,24 @@
   </footer>
 
   <script>
-    const saleRaw  = sessionStorage.getItem('saleResponse');
-    const quoteRaw = sessionStorage.getItem('quoteResponse');
-    const reqRaw   = sessionStorage.getItem('quoteRequest');
+    const sale      = JSON.parse(sessionStorage.getItem('saleResponse')      || '{}');
+    const quote     = JSON.parse(sessionStorage.getItem('quoteResponse')     || '{}');
+    const request   = JSON.parse(sessionStorage.getItem('quoteRequest')      || '{}');
+    const selection = JSON.parse(sessionStorage.getItem('productSelection')  || 'null');
 
-    const sale    = saleRaw  ? JSON.parse(saleRaw)  : {};
-    const quote   = quoteRaw ? JSON.parse(quoteRaw) : {};
-    const request = reqRaw   ? JSON.parse(reqRaw)   : {};
+    const rounding     = quote.priceRounding ?? 2;
+    const ticketValue  = request.ticketValue ?? 0;
+    const protectPrice = quote.products?.[0]?.productData?.[0]?.totalProductPrice ?? 0;
+    const currency     = quote.products?.[0]?.productData?.[0]?.currencyCode ?? '';
+    const sold         = selection?.sold ?? false;
+    const total        = sold ? ticketValue + protectPrice : ticketValue;
 
     const rows = [
       ['Sale ID',     sale.saleId ?? '-'],
       ['Quote ID',    quote.quoteId ?? '-'],
       ['Product',     quote.products?.[0]?.code ?? '-'],
       ['Tickets',     request.numberOfTickets ?? '-'],
-      ['Total price', quote.products?.[0]?.productData?.[0]?.totalProductPrice?.toFixed(quote.priceRounding ?? 2) ?? '-'],
+      ['Total',       `${currency} ${total.toFixed(rounding)}`],
     ];
 
     document.getElementById('confirmation-summary').innerHTML =
