@@ -80,11 +80,12 @@
       const quote   = JSON.parse(sessionStorage.getItem('quoteResponse') || '{}');
       const product = quote.products?.[0];
 
+      const itemValue = product?.productData?.[0]?.sourcePrice ?? 0;
       const items = Array.from({ length: request.numberOfTickets ?? 1 }, (_, i) => ({
         customerName: `${pick(firstNames)} ${pick(lastNames)}`,
         description:  `Item Description ${i + 1}`,
         reference:    `Item Reference ${i + 1}`,
-        value:        request.ticketValue ?? 0,
+        value:        itemValue,
       }));
 
       const body = {

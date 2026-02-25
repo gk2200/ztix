@@ -11,7 +11,7 @@ export default async function handler(req, res) {
         'x-pg-client-id':     req.headers['x-pg-client-id'] ?? '',
         'x-pg-client-secret': req.headers['x-pg-client-secret'] ?? '',
       },
-      body: JSON.stringify(req.body),
+      body: JSON.stringify((({ method, Method, ...rest }) => rest)(req.body)),
     });
 
     const data = await response.json();
