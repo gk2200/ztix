@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirmation</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header>
+    <h1>ztix</h1>
+  </header>
+
+  <main>
+    <p class="step-label">Complete</p>
+    <h2>Booking confirmed</h2>
+
+    <div id="confirmation-summary" class="quote-summary"></div>
+
+    <div id="confirmation-html"></div>
+  </main>
+
+  <footer>
+    <button class="btn-next" type="button" onclick="window.location.href='index.html'">New booking</button>
+  </footer>
+
+  <script>
+    const saleRaw  = sessionStorage.getItem('saleResponse');
+    const quoteRaw = sessionStorage.getItem('quoteResponse');
+    const reqRaw   = sessionStorage.getItem('quoteRequest');
+
+    const sale    = saleRaw  ? JSON.parse(saleRaw)  : {};
+    const quote   = quoteRaw ? JSON.parse(quoteRaw) : {};
+    const request = reqRaw   ? JSON.parse(reqRaw)   : {};
+
+    const rows = [
+      ['Sale ID',     sale.saleId ?? '-'],
+      ['Quote ID',    quote.quoteId ?? '-'],
+      ['Product',     quote.products?.[0]?.code ?? '-'],
+      ['Tickets',     request.numberOfTickets ?? '-'],
+      ['Total price', quote.products?.[0]?.productData?.[0]?.totalProductPrice?.toFixed(quote.priceRounding ?? 2) ?? '-'],
+    ];
+
+    document.getElementById('confirmation-summary').innerHTML =
+      rows.map(([label, value]) => `
+        <div class="quote-row"><span>${label}</span><span>${value}</span></div>
+      `).join('');
+
+    if (sale.refundableConfirmationHtml) {
+      document.getElementById('confirmation-html').innerHTML = sale.refundableConfirmationHtml;
+    }
+  </script>
+
+</body>
+</html>

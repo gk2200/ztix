@@ -146,6 +146,10 @@ main h2 {
   margin-bottom: 28px;
 }
 
+#confirmation-html {
+  margin-top: 20px;
+}
+
 .quote-summary {
   border: 1px solid #ddd;
   border-radius: 4px;

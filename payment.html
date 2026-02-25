@@ -127,8 +127,8 @@
         }
 
         const data = await res.json();
-        console.log('Sale response:', data);
-        alert('Payment successful!');
+        sessionStorage.setItem('saleResponse', JSON.stringify(data));
+        window.location.href = 'confirmation.html';
       } catch (err) {
         errMsg.textContent = `Error: ${err.message}`;
         btn.disabled = false;
