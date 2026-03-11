@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Payment</title>
+  <title>Checkout — ztix</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -12,53 +12,76 @@
     <h1>ztix</h1>
   </header>
 
-  <main>
-<h2>Payment</h2>
+  <main class="checkout-layout">
 
-    <div id="quote-summary" class="quote-summary"></div>
+    <!-- Left: form -->
+    <div class="checkout-form-col">
 
-    <div id="quote-widget"></div>
+      <div id="quote-widget" class="checkout-section checkout-section--widget"></div>
 
-    <form id="payment-form">
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="first-name">First name</label>
-          <input type="text" id="first-name" name="first_name">
+      <div class="checkout-section">
+        <h3 class="checkout-section-title">Contact</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="first-name">First name</label>
+            <input type="text" id="first-name" name="first_name" autocomplete="given-name">
+          </div>
+          <div class="form-group">
+            <label for="last-name">Last name</label>
+            <input type="text" id="last-name" name="last_name" autocomplete="family-name">
+          </div>
         </div>
-        <div class="form-group">
-          <label for="last-name">Last name</label>
-          <input type="text" id="last-name" name="last_name">
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input type="text" id="email" name="email">
-      </div>
-
-      <div class="form-group">
-        <label for="card-number">Card number</label>
-        <input type="text" id="card-number" name="card_number" placeholder="1234 5678 9012 3456" maxlength="19">
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="expiry">Expiry date</label>
-          <input type="text" id="expiry" name="expiry" placeholder="MM/YY" maxlength="5">
-        </div>
-        <div class="form-group">
-          <label for="cvv">CVV</label>
-          <input type="text" id="cvv" name="cvv" placeholder="123" maxlength="4">
+        <div class="form-group" style="margin-bottom:0">
+          <label for="email">Email</label>
+          <input type="text" id="email" name="email" autocomplete="email">
         </div>
       </div>
 
-    </form>
+      <div class="checkout-section">
+        <h3 class="checkout-section-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:-1px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Payment
+        </h3>
+        <div class="form-group">
+          <label for="card-number">Card number</label>
+          <input type="text" id="card-number" name="card_number" placeholder="1234 5678 9012 3456" maxlength="19" autocomplete="cc-number" inputmode="numeric">
+        </div>
+        <div class="form-row" style="margin-bottom:0">
+          <div class="form-group" style="margin-bottom:0">
+            <label for="expiry">Expiry date</label>
+            <input type="text" id="expiry" name="expiry" placeholder="MM/YY" maxlength="5" autocomplete="cc-exp">
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label for="cvv">CVV</label>
+            <input type="text" id="cvv" name="cvv" placeholder="•••" maxlength="4" autocomplete="cc-csc" inputmode="numeric">
+          </div>
+        </div>
+      </div>
+
+      <div class="checkout-actions">
+        <span id="pay-error" class="error-msg"></span>
+        <button class="btn-pay" type="button" onclick="submitSale()">Pay now</button>
+      </div>
+
+    </div>
+
+    <!-- Right: summary -->
+    <div class="checkout-summary-col">
+      <div class="summary-card">
+
+        <h3 class="summary-title">Order summary</h3>
+
+        <div id="cart-summary"></div>
+
+        <div id="quote-summary"></div>
+
+      </div>
+    </div>
+
   </main>
 
   <footer>
     <button class="btn-back" type="button" onclick="window.location.href='index.html'">Back</button>
-    <span id="pay-error" class="error-msg"></span>
     <div class="footer-right">
       <div class="tooltip-wrap">
         <svg class="tooltip-icon" id="payload-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -68,11 +91,12 @@
         </svg>
         <pre class="tooltip-box" id="payload-preview"></pre>
       </div>
-      <button class="btn-next" type="button" onclick="submitSale()">Pay</button>
     </div>
   </footer>
 
   <script>
+    /* ── Helpers ───────────────────────────────────────────── */
+
     function randomRef(len) {
       const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
       return Array.from({ length: len }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
@@ -82,14 +106,103 @@
       return `+1-555-${String(Math.floor(Math.random() * 900) + 100)}-${String(Math.floor(Math.random() * 9000) + 1000)}`;
     }
 
+    const firstNames = ['James', 'Emma', 'Liam', 'Olivia', 'Noah', 'Sophia', 'Lucas', 'Mia'];
+    const lastNames  = ['Taylor', 'Smith', 'Johnson', 'Brown', 'Wilson', 'Davis', 'Clark', 'Lee'];
+    const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+
+    /* ── Pre-fill contact ─────────────────────────────────── */
+
+    const firstName = pick(firstNames);
+    const lastName  = pick(lastNames);
+    document.getElementById('first-name').value = firstName;
+    document.getElementById('last-name').value  = lastName;
+    document.getElementById('email').value       = `${firstName.toLowerCase()}.${lastName.toLowerCase()}@example.com`;
+
+    /* ── Card number auto-format ──────────────────────────── */
+
+    document.getElementById('card-number').addEventListener('input', function () {
+      const digits = this.value.replace(/\D/g, '').slice(0, 16);
+      this.value = digits.match(/.{1,4}/g)?.join(' ') ?? digits;
+    });
+
+    document.getElementById('expiry').addEventListener('input', function () {
+      const digits = this.value.replace(/\D/g, '').slice(0, 4);
+      this.value = digits.length > 2 ? `${digits.slice(0, 2)}/${digits.slice(2)}` : digits;
+    });
+
+    /* ── Order summary ────────────────────────────────────── */
+
+    const cartItems  = JSON.parse(sessionStorage.getItem('cartItems')  || '[]');
+    const rawQuote   = sessionStorage.getItem('quoteResponse');
+    let productSelection = null;
+    let widgetRequired   = false;
+
+    const cartSummaryEl = document.getElementById('cart-summary');
+    if (cartItems.length > 0) {
+      const subtotal = cartItems.reduce((s, i) => s + i.value, 0);
+      cartSummaryEl.innerHTML = cartItems.map(item => `
+        <div class="summary-item">
+          <div class="summary-item-left">
+            <div class="summary-item-name">${item.name}</div>
+            <div class="summary-item-meta">${item.numberOfTickets} ticket${item.numberOfTickets !== 1 ? 's' : ''}</div>
+          </div>
+          <div class="summary-item-price">${item.value}</div>
+        </div>
+      `).join('') + `<div class="summary-divider"></div>`;
+    }
+
+    /* ── Quote widget + total ─────────────────────────────── */
+
+    if (rawQuote) {
+      const quote   = JSON.parse(rawQuote);
+      const product = quote.products?.[0];
+
+      if (product) {
+        const request      = JSON.parse(sessionStorage.getItem('quoteRequest') || '{}');
+        const rounding     = quote.priceRounding ?? 2;
+        const ticketValue  = request.ticketValue ?? 0;
+        const protectPrice = product.productData?.[0]?.totalProductPrice ?? 0;
+        const currency     = product.productData?.[0]?.currencyCode ?? '';
+
+        function updateTotal(sold) {
+          const total = sold ? ticketValue + protectPrice : ticketValue;
+          document.getElementById('summary-total-value').textContent = `${currency} ${total.toFixed(rounding)}`;
+        }
+
+        document.getElementById('quote-summary').innerHTML = `
+          <div class="summary-total-row">
+            <span>Total</span>
+            <span id="summary-total-value">${currency} ${ticketValue.toFixed(rounding)}</span>
+          </div>
+        `;
+
+        if (product.html) {
+          widgetRequired = true;
+          const widget = document.getElementById('quote-widget');
+          widget.innerHTML = product.html;
+          widget.querySelectorAll('script').forEach(oldScript => {
+            const newScript = document.createElement('script');
+            newScript.textContent = oldScript.textContent;
+            oldScript.replaceWith(newScript);
+          });
+        }
+      }
+    }
+
+    document.addEventListener('pg-change', function (e) {
+      productSelection = e.detail;
+      if (typeof updateTotal === 'function') updateTotal(productSelection.sold);
+    });
+
+    /* ── Submit ───────────────────────────────────────────── */
+
     async function submitSale() {
-      const btn     = document.querySelector('.btn-next');
+      const btn     = document.querySelector('.btn-pay');
       const errMsg  = document.getElementById('pay-error');
       const request = JSON.parse(sessionStorage.getItem('quoteRequest') || '{}');
       const quote   = JSON.parse(sessionStorage.getItem('quoteResponse') || '{}');
       const product = quote.products?.[0];
 
-      const cartItems = JSON.parse(sessionStorage.getItem('cartItems') || '[]');
       const items = cartItems.flatMap(cartItem =>
         Array.from({ length: cartItem.numberOfTickets }, (_, i) => ({
           customerName: `${pick(firstNames)} ${pick(lastNames)}`,
@@ -118,7 +231,13 @@
         quoteId: quote.quoteId,
       };
 
-      btn.disabled = true;
+      if (widgetRequired && productSelection === null) {
+        errMsg.textContent = 'Please make a selection above before continuing.';
+        document.getElementById('quote-widget').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+
+      btn.disabled    = true;
       btn.textContent = 'Processing...';
       errMsg.textContent = '';
 
@@ -143,71 +262,18 @@
         sessionStorage.setItem('productSelection', JSON.stringify(productSelection));
         window.location.href = 'confirmation.html';
       } catch (err) {
-        errMsg.textContent = `Error: ${err.message}`;
-        btn.disabled = false;
-        btn.textContent = 'Pay';
+        errMsg.textContent  = `Error: ${err.message}`;
+        btn.disabled        = false;
+        btn.textContent     = 'Pay now';
       }
     }
 
-    const firstNames = ['James', 'Emma', 'Liam', 'Olivia', 'Noah', 'Sophia', 'Lucas', 'Mia'];
-    const lastNames  = ['Taylor', 'Smith', 'Johnson', 'Brown', 'Wilson', 'Davis', 'Clark', 'Lee'];
-    const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+    /* ── Payload preview ──────────────────────────────────── */
 
-    const firstName = pick(firstNames);
-    const lastName  = pick(lastNames);
-    document.getElementById('first-name').value = firstName;
-    document.getElementById('last-name').value  = lastName;
-    document.getElementById('email').value       = `${firstName.toLowerCase()}.${lastName.toLowerCase()}@example.com`;
-
-    let productSelection = null;
-
-    document.addEventListener('pg-change', function (e) {
-      productSelection = e.detail;
-      if (typeof updateTotal === 'function') updateTotal(productSelection.sold);
-    });
-
-    const raw = sessionStorage.getItem('quoteResponse');
-    if (raw) {
-      const quote = JSON.parse(raw);
-      const product = quote.products?.[0];
-      const summary = document.getElementById('quote-summary');
-
-      if (product) {
-        const request       = JSON.parse(sessionStorage.getItem('quoteRequest') || '{}');
-        const rounding      = quote.priceRounding ?? 2;
-        const ticketValue   = request.ticketValue ?? 0;
-        const protectPrice  = product.productData?.[0]?.totalProductPrice ?? 0;
-        const currency      = product.productData?.[0]?.currencyCode ?? '';
-
-        function updateTotal(sold) {
-          const total = sold ? ticketValue + protectPrice : ticketValue;
-          document.getElementById('basket-total').textContent = `${currency} ${total.toFixed(rounding)}`;
-        }
-
-        summary.innerHTML = `
-          <div class="quote-row"><span>Quote ID</span><span>${quote.quoteId}</span></div>
-          <div class="quote-row"><span>Product</span><span>${product.code}</span></div>
-          <div class="quote-row"><span>Total</span><span id="basket-total">${currency} ${ticketValue.toFixed(rounding)}</span></div>
-        `;
-
-        if (product.html) {
-          const widget = document.getElementById('quote-widget');
-          widget.innerHTML = product.html;
-
-          // Re-run any inline scripts from the widget
-          widget.querySelectorAll('script').forEach(oldScript => {
-            const newScript = document.createElement('script');
-            newScript.textContent = oldScript.textContent;
-            oldScript.replaceWith(newScript);
-          });
-        }
-      }
-    }
     document.getElementById('payload-icon').addEventListener('mouseenter', function () {
       const request = JSON.parse(sessionStorage.getItem('quoteRequest') || '{}');
       const quote   = JSON.parse(sessionStorage.getItem('quoteResponse') || '{}');
       const product = quote.products?.[0];
-      const cartItems = JSON.parse(sessionStorage.getItem('cartItems') || '[]');
       const body = {
         bookingReference: '<generated on submit>',
         customers: [{
@@ -233,7 +299,6 @@
         }],
         quoteId: quote.quoteId,
       };
-
       document.getElementById('payload-preview').textContent = JSON.stringify(body, null, 2);
     });
   </script>
